@@ -1,12 +1,13 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Module } from '@nestjs/common';
 import configuration, {
   ConfigurationType,
 } from './core/config/configurationType';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
+import { BooksModule } from './modules/books/books.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { UsersModule } from './modules/users/users.module';
       },
     }),
     UsersModule,
+    BooksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
