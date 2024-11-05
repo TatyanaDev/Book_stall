@@ -6,6 +6,7 @@ import configuration, {
 } from './core/config/configurationType';
 import { UsersModule } from './modules/users/users.module';
 import { BooksModule } from './modules/books/books.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -41,6 +42,7 @@ import { AppService } from './app.service';
     }),
     UsersModule,
     BooksModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
