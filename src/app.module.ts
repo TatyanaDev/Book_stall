@@ -12,34 +12,34 @@ import { AppService } from './app.service';
 
 @Module({
   imports: [
-    //подключение и настройка конфиг модуля из пакета @nestjs/config
-    //в файле configuration указаны переменные окружения https://docs.nestjs.com/techniques/configuration
+    // Load configuration https://docs.nestjs.com/techniques/configuration
     ConfigModule.forRoot({
+      isGlobal: true, // Makes ConfigModule available globally
       load: [configuration],
     }),
 
-    //подключение и настройка базы данных
+    // TypeORM Database Configuration
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService<ConfigurationType>) => {
-        const databaseSettings = configService.get('dbSettings', {
-          infer: true,
-        })!;
+        const dbSettings = configService.get('dbSettings', { infer: true });
 
         return {
-          type: 'postgres',
-          host: databaseSettings.DB_HOST,
-          port: databaseSettings.DB_PORT,
-          username: databaseSettings.USERNAME,
-          password: databaseSettings.PASSWORD,
-          database: databaseSettings.DB_NAME,
+          type: dbSettings?.DB_TYPE as 'postgres',
+          host: dbSettings?.DB_HOST,
+          port: dbSettings?.DB_PORT,
+          username: dbSettings?.USERNAME,
+          password: dbSettings?.PASSWORD,
+          database: dbSettings?.DB_NAME,
           autoLoadEntities: true,
-          synchronize: true,
-          logger: 'debug',
+          synchronize: true, // Disable in production!
+          logging: ['error', 'warn'],
         };
       },
     }),
+
+    // Import application modules
     UsersModule,
     BooksModule,
     AuthModule,

@@ -7,21 +7,33 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  //подключение глобального валидационного pipe https://docs.nestjs.com/techniques/validation
-  app.useGlobalPipes(new ValidationPipe());
+  // Global Validation Pipe for input validation
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // Automatically strip properties not defined in DTOs
+      forbidNonWhitelisted: true, // Throw error if undefined properties are passed
+      transform: true, // Automatically transform payloads to DTO instances
+    }),
+  );
 
-  //разрешены запросы с любых доменов
+  // Enable Cross-Origin Resource Sharing (CORS)
   app.enableCors({
-    origin: '*', // Разрешает запросы с любых доменов
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Разрешенные методы
-    credentials: true, // Включает передачу cookies
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // Include cookies in requests
   });
 
-  //получение конфиг сервиса https://docs.nestjs.com/techniques/configuration#using-in-the-maints
-  const configService = app.get(ConfigService<ConfigurationType>);
-  const port = configService.get('apiSettings.PORT', { infer: true })!;
+  // Retrieve configuration service with typing https://docs.nestjs.com/techniques/configuration#using-in-the-maints
+  const configService =
+    app.get<ConfigService<ConfigurationType>>(ConfigService);
+  const port = configService.get<number>('apiSettings.PORT', { infer: true });
+
+  if (!port) {
+    throw new Error('PORT is not defined in the configuration.');
+  }
 
   await app.listen(port);
+  console.log(`Server has been started on: http://localhost:${port}`);
 }
 
 bootstrap();
