@@ -1,29 +1,52 @@
 import { Injectable } from '@nestjs/common';
+import { UsersRepository } from '../users/users.repository';
+import { UpdateBookDto } from './dto/update-book.dto';
 import { CreateBookDto } from './dto/create-book.dto';
 import { BooksRepository } from './books.repository';
 import { Book } from './book.entity';
 
 @Injectable()
 export class BooksService {
-  constructor(private readonly booksRepository: BooksRepository) {}
+  constructor(
+    private readonly booksRepository: BooksRepository,
+    private readonly usersRepository: UsersRepository,
+  ) {}
 
-  // Получить список всех книг
   async getAllBooks(): Promise<Book[]> {
     return this.booksRepository.findAll();
   }
 
-  // Получить книгу по ID
   async getBookById(id: number): Promise<Book> {
     return this.booksRepository.findOneOrNotFoundFail(id);
   }
 
-  // Создать новую книгу
-  async createBook(dto: CreateBookDto): Promise<void> {
-    const book = new Book();
-    book.title = dto.title;
-    book.ageRestriction = dto.ageRestriction;
-    book.author = dto.author;
+  async createBook(
+    createBookDto: CreateBookDto,
+    userId: number,
+  ): Promise<Book> {
+    const user = await this.usersRepository.findByIdOrNotFoundFail(userId);
+    const newBook = Book.createBook(createBookDto, userId, user.age);
 
-    await this.booksRepository.save(book);
+    return this.booksRepository.save(newBook);
+  }
+
+  async updateBook(
+    id: number,
+    updateBookDto: UpdateBookDto,
+    userId: number,
+  ): Promise<Book> {
+    const book = await this.booksRepository.findOneOrNotFoundFail(id);
+
+    book.updateBook(updateBookDto, userId);
+
+    return this.booksRepository.save(book);
+  }
+
+  async deleteBook(id: number, userId: number): Promise<void> {
+    const book = await this.booksRepository.findOneOrNotFoundFail(id);
+
+    book.deleteBook(userId);
+
+    await this.booksRepository.remove(book.id);
   }
 }

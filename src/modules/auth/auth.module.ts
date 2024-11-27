@@ -1,4 +1,5 @@
 import { PassportModule } from '@nestjs/passport';
+import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
 import { UsersModule } from '../users/users.module';
@@ -10,9 +11,12 @@ import { AuthService } from './auth.service';
   imports: [
     UsersModule,
     PassportModule,
-    JwtModule.register({
-      secret: 'secret_key', // секретный ключ (должен браться из env)
-      signOptions: { expiresIn: '60m' }, // Время жизни токена
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('SECRET_KEY'),
+        signOptions: { expiresIn: '60m' }, // Token expiry
+      }),
     }),
   ],
   controllers: [AuthController],
