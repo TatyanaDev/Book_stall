@@ -25,6 +25,7 @@ export class BooksService {
     userId: number,
   ): Promise<Book> {
     const user = await this.usersRepository.findByIdOrNotFoundFail(userId);
+
     const newBook = Book.createBook(createBookDto, userId, user.age);
 
     return this.booksRepository.save(newBook);

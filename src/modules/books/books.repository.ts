@@ -19,13 +19,13 @@ export class BooksRepository {
   }
 
   async findOneOrNotFoundFail(id: number): Promise<Book> {
-    const result = await this.booksORMRepository.findOne({ where: { id } });
+    const book = await this.booksORMRepository.findOne({ where: { id } });
 
-    if (!result) {
-      throw new NotFoundException('Book not found'); //тут код прервется и выдаст ошибку, которую nestjs отправит в ответе
+    if (!book) {
+      throw new NotFoundException('Book not found');
     }
 
-    return result;
+    return book;
   }
 
   async remove(id: number): Promise<void> {
