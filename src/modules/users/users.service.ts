@@ -10,6 +10,7 @@ export class UsersService {
   async registerUser(dto: RegisterUserDto): Promise<number> {
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const user = new User();
+
     user.age = dto.age;
     user.email = dto.email;
     user.name = dto.name;

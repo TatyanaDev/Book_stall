@@ -8,13 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Global Validation Pipe for input validation
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true, // Automatically strip properties not defined in DTOs
-      forbidNonWhitelisted: true, // Throw error if undefined properties are passed
-      transform: true, // Automatically transform payloads to DTO instances
-    }),
-  );
+  app.useGlobalPipes(new ValidationPipe({}));
 
   // Enable Cross-Origin Resource Sharing (CORS)
   app.enableCors({
