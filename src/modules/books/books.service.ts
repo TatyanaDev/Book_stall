@@ -3,6 +3,7 @@ import { UsersRepository } from '../users/users.repository';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { CreateBookDto } from './dto/create-book.dto';
 import { BooksRepository } from './books.repository';
+import { User } from '../users/user.entity';
 import { Book } from './book.entity';
 
 @Injectable()
@@ -16,8 +17,18 @@ export class BooksService {
     return this.booksRepository.findAll();
   }
 
-  async getBookById(id: number): Promise<Book> {
-    return this.booksRepository.findOneOrNotFoundFail(id);
+  async getBookById(id: number, userId: number | null): Promise<Book> {
+    let user: User | null = null;
+
+    if (userId !== null) {
+      user = await this.usersRepository.findByIdOrNotFoundFail(userId);
+    }
+
+    const book = await this.booksRepository.findOneOrNotFoundFail(id);
+
+    book.getBookById(user);
+
+    return book;
   }
 
   async createBook(

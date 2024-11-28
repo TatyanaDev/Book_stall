@@ -3,6 +3,7 @@ import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '../../core/entity/base.entity';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { User } from '../users/user.entity';
 
 @Entity('books')
 export class Book extends BaseEntity {
@@ -21,10 +22,18 @@ export class Book extends BaseEntity {
   @Column({ nullable: true })
   image?: string;
 
+  getBookById(user: User | null): void {
+    if (this.ageRestriction >= 18) {
+      if (!user || user.age < 18) {
+        throw new ForbiddenException('You are not allowed to view this book');
+      }
+    }
+  }
+
   static createBook(dto: CreateBookDto, userId: number, userAge: number): Book {
-    if (userAge < dto.ageRestriction) {
+    if (userAge < 18 && dto.ageRestriction >= 18) {
       throw new ForbiddenException(
-        'You are not allowed to create a book with an age restriction greater than your age',
+        `You must be at least 18 years old to create a book with an age restriction of 18 or higher. Your age: ${userAge}`,
       );
     }
 

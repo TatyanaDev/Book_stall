@@ -12,6 +12,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { AuthenticatedRequest } from '../../types/authenticated-request';
+import { OptionalJwtGuard } from '../../core/guards/optional-jwt.guard';
 import { JwtAuthGuard } from '../../core/guards/jwt-auth.guard';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
@@ -29,8 +30,14 @@ export class BooksController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async getBookById(@Param('id') id: number) {
-    return this.booksService.getBookById(id);
+  @UseGuards(OptionalJwtGuard)
+  async getBookById(
+    @Param('id') id: number,
+    @Request() req: AuthenticatedRequest,
+  ) {
+    const userId = req.user?.userId || null;
+
+    return this.booksService.getBookById(id, userId);
   }
 
   @Post()
@@ -40,7 +47,9 @@ export class BooksController {
     @Body() bookDto: CreateBookDto,
     @Request() req: AuthenticatedRequest,
   ) {
-    return this.booksService.createBook(bookDto, req.user.userId);
+    const userId = req.user.userId;
+
+    return this.booksService.createBook(bookDto, userId);
   }
 
   @Put(':id')

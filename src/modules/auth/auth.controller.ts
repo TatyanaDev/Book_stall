@@ -18,6 +18,8 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(@Request() req: AuthenticatedRequest) {
-    return this.authService.login(req.user.userId);
+    const userId = req.user.userId;
+
+    return this.authService.login(userId);
   }
 }

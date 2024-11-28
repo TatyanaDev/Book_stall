@@ -45,18 +45,9 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+## Frontend
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
+The frontend for this application can be found [here](https://nest-webinar-front.vercel.app/).
 
 ## Support
 

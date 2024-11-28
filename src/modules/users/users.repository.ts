@@ -20,13 +20,13 @@ export class UsersRepository {
   }
 
   async findByIdOrNotFoundFail(id: number) {
-    const result = await this.usersOrmRepository.findOneBy({ id });
+    const user = await this.usersOrmRepository.findOneBy({ id });
 
-    if (!result) {
-      throw new NotFoundException('user not found');
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
 
-    return result;
+    return user;
   }
 
   findAll() {
